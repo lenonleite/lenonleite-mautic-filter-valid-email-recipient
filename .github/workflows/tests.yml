@@ -1,0 +1,43 @@
+name: Plugin Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout plugin code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, mysql, pdo_mysql
+          coverage: none
+
+      - name: Download Mautic
+        run: |
+          wget https://github.com/mautic/mautic/releases/download/5.2.0/5.2.0.zip
+          unzip 5.2.0.zip
+          mv 5.2.0 mautic5.2
+
+      - name: Install Mautic dependencies
+        working-directory: ./mautic5.2
+        run: composer install --no-interaction --no-progress
+
+      - name: Move plugin to Mautic plugins directory
+        run: |
+          mkdir -p mautic5.2/plugins/LenonLeiteFilterValidEmailRecipientBundle
+          mv $(ls -A | grep -v "mautic5.2") mautic5.2/plugins/LenonLeiteFilterValidEmailRecipientBundle/
+
+      - name: Run plugin tests
+        working-directory: ./mautic5.2/plugins/LenonLeiteFilterValidEmailRecipientBundle
+        run: |
+          composer install --no-interaction --no-progress
+          ../../../bin/phpunit --configuration phpunit.xml

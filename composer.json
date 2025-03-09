@@ -1,0 +1,24 @@
+{
+  "name": "lenonleite/lenonleite-filter-valid-email-recipient",
+  "description": "This plugin will give possibility to filter valid email recipients at segment level",
+  "type": "mautic-plugin",
+  "license": "GPL-3.0",
+  "authors": [
+      {
+          "name": "Lenon Leite",
+          "email": "lenonleite@gmail.com"
+      }
+  ],
+  "keywords": [
+    "mautic",
+    "plugin",
+    "integration"
+  ],
+  "extra": {
+      "install-directory-name": "LenonLeiteFilterValidEmailRecipientBundle",
+  },
+  "minimum-stability": "dev",
+  "require": {
+      "mautic/core-lib": "^5.0"
+  }
+}
