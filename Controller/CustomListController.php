@@ -145,9 +145,9 @@ class CustomListController extends ListController
 
     public function editAction(Request $request, SegmentDependencies $segmentDependencies, SegmentCampaignShare $segmentCampaignShare, $objectId, $ignorePost = false, bool $isNew = false)
     {
-//        if (!$this->config->isPublished()) {
-//            return parent::editAction($request, $segmentDependencies, $segmentCampaignShare, $objectId, $ignorePost, $isNew);
-//        }
+        if (!$this->config->isPublished()) {
+            return parent::editAction($request, $segmentDependencies, $segmentCampaignShare, $objectId, $ignorePost, $isNew);
+        }
 
         $postActionVars = $this->getPostActionVars($request, $objectId);
 

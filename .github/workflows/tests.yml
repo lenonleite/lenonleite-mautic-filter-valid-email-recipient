@@ -1,4 +1,4 @@
-name: Plugin Tests
+name: Plugin Tests PHP Matrix
 
 on:
   pull_request:
@@ -9,6 +9,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['8.1', '8.2', '8.3']
+    name: PHP ${{ matrix.php-versions }}
     
     steps:
       - name: Checkout plugin code
@@ -17,19 +21,21 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: ${{ matrix.php-versions }}
           extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, mysql, pdo_mysql
           coverage: none
 
       - name: Download Mautic
         run: |
-          wget https://github.com/mautic/mautic/releases/download/5.2.0/5.2.0.zip
-          unzip 5.2.0.zip
-          mv 5.2.0 mautic5.2
+          git clone https://github.com/mautic/mautic.git mautic5.2
+          cd mautic5.2
+          git checkout 5.2.0
 
       - name: Install Mautic dependencies
         working-directory: ./mautic5.2
-        run: composer install --no-interaction --no-progress
+        run: |
+          composer validate
+          composer install --no-interaction --no-progress
 
       - name: Move plugin to Mautic plugins directory
         run: |
@@ -37,7 +43,6 @@ jobs:
           mv $(ls -A | grep -v "mautic5.2") mautic5.2/plugins/LenonLeiteFilterValidEmailRecipientBundle/
 
       - name: Run plugin tests
-        working-directory: ./mautic5.2/plugins/LenonLeiteFilterValidEmailRecipientBundle
+        working-directory: ./mautic5.2
         run: |
-          composer install --no-interaction --no-progress
-          ../../../bin/phpunit --configuration phpunit.xml
+          composer test -- --filter LenonLeiteFilterValidEmailRecipientBundle
