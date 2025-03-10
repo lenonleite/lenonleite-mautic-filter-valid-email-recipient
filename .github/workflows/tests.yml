@@ -12,11 +12,12 @@ jobs:
     strategy:
       matrix:
         php-versions: ['8.1', '8.2', '8.3']
-    name: PHP ${{ matrix.php-versions }}
+        database: ['mysql:8.0', 'mariadb:10.6']
+    name: PHP ${{ matrix.php-versions }} with ${{ matrix.database }}
     
     services:
-      mysql:
-        image: mysql:8.0
+      db:
+        image: ${{ matrix.database }}
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: test
@@ -63,7 +64,7 @@ jobs:
           mkdir -p mautic5.2/plugins/LenonLeiteFilterValidEmailRecipientBundle
           mv $(ls -A | grep -v "mautic5.2") mautic5.2/plugins/LenonLeiteFilterValidEmailRecipientBundle/
 
-      - name: Wait for MySQL to be ready
+      - name: Wait for database to be ready
         run: |
           for i in {1..30}; do
             mysql -h 127.0.0.1 -u db -pdb -e "SELECT 1" test && break
