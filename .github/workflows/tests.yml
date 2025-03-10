@@ -43,15 +43,6 @@ jobs:
           cd mautic5.2
           git checkout 5.2.0
 
-      - name: Configure Mautic
-        working-directory: ./mautic5.2
-        run: |
-          cp app/config/local.php.dist app/config/local.php
-          sed -i "s/'localhost'/'127.0.0.1'/g" app/config/local.php
-          sed -i "s/'root'/'mautic'/g" app/config/local.php
-          sed -i "s/'pass'/'mautic'/g" app/config/local.php
-          sed -i "s/'mautic'/'mautic_test'/g" app/config/local.php
-
       - name: Install Mautic dependencies
         working-directory: ./mautic5.2
         run: |
@@ -72,7 +63,4 @@ jobs:
           MAUTIC_DB_PASSWORD: mautic
           MAUTIC_DB_NAME: mautic_test
         run: |
-          php bin/console doctrine:database:create --env=test --if-not-exists
-          php bin/console doctrine:schema:create --env=test
-          php bin/console doctrine:fixtures:load --env=test --no-interaction
           composer test -- --filter LenonLeiteFilterValidEmailRecipientBundle
