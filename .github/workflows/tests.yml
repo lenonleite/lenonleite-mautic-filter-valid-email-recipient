@@ -43,6 +43,12 @@ jobs:
           cd mautic5.2
           git checkout 5.2.0
 
+      - name: Configure Mautic Test Environment
+        working-directory: ./mautic5.2
+        run: |
+          cp .env .env.test.local
+          sed -i 's,DATABASE_URL=.*,DATABASE_URL="mysql://mautic:mautic@127.0.0.1:3306/mautic_test?serverVersion=8.0.37\&charset=utf8mb4",g' .env.test.local
+
       - name: Install Mautic dependencies
         working-directory: ./mautic5.2
         run: |
@@ -54,13 +60,17 @@ jobs:
           mkdir -p mautic5.2/plugins/LenonLeiteFilterValidEmailRecipientBundle
           mv $(ls -A | grep -v "mautic5.2") mautic5.2/plugins/LenonLeiteFilterValidEmailRecipientBundle/
 
+      - name: Setup test database
+        working-directory: ./mautic5.2
+        run: |
+          php bin/console doctrine:database:create --env=test --if-not-exists
+          php bin/console doctrine:schema:create --env=test
+          php bin/console doctrine:fixtures:load --env=test --no-interaction
+
       - name: Run plugin tests
         working-directory: ./mautic5.2
         env:
-          MAUTIC_DB_HOST: 127.0.0.1
-          MAUTIC_DB_PORT: 3306
-          MAUTIC_DB_USER: mautic
-          MAUTIC_DB_PASSWORD: mautic
-          MAUTIC_DB_NAME: mautic_test
+          APP_ENV: test
+          DATABASE_URL: "mysql://mautic:mautic@127.0.0.1:3306/mautic_test?serverVersion=8.0.37&charset=utf8mb4"
         run: |
           composer test -- --filter LenonLeiteFilterValidEmailRecipientBundle
