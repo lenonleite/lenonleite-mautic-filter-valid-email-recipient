@@ -14,7 +14,6 @@ class CustomListControllerTest extends MauticMysqlTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->activePlugin();
 
     }
 
@@ -49,19 +48,6 @@ class CustomListControllerTest extends MauticMysqlTestCase
         $crawler = $this->client->request('GET', '/s/segments/edit/' . $segment->getId());
         $this->assertStringContainsString('Exclude Unsubscribed', $this->client->getResponse()->getContent());
 
-//        $form = $crawler->filter('form[name=leadlist]')->form();
-//        $form    = $crawler->selectButton('leadlist_buttons_apply')->form();
-//        dd($form->getPhpValues(),'AAAA');
-//        $data = $form->getPhpValues();
-//        $data['custom_leadlist[exclude_unsubscribed]'] = true;
-//        $data['custom_leadlist[exclude_bounces]'] = 0;
-//        $form->setValues($data);
-//        $crawler = $this->client->submit($form);
-//        $customLeadListModel = $this->getContainer()->get('mautic.lenonleitefiltervalidemailrecipient.model.customleadlist');
-//        assert($customLeadListModel instanceof \MauticPlugin\LenonLeiteFilterValidEmailRecipientBundle\Model\CustomLeadListModel);
-//        $customLeadList = $customLeadListModel->getRepository()->findBy(['leadList' => $segment]);
-//        dd($customLeadList);
-
     }
 
     private function saveSegment(string $name, string $alias, array $filters = [], LeadList $segment = null): LeadList
@@ -77,6 +63,7 @@ class CustomListControllerTest extends MauticMysqlTestCase
 
     public function activePlugin($isPublished = true): void
     {
+        $this->client->request('GET', '/s/plugins/reload');
         $integration = $this->em->getRepository(Integration::class)->findOneBy(['name' => LenonLeiteFilterValidEmailRecipientIntegration::INTEGRATION_NAME]);
         if (empty($integration)) {
             $plugin      = $this->em->getRepository(Plugin::class)->findOneBy(['bundle' => 'LenonLeiteFilterValidEmailRecipientBundle']);
@@ -87,7 +74,7 @@ class CustomListControllerTest extends MauticMysqlTestCase
         $integration->setIsPublished($isPublished);
         $this->em->persist($integration);
         $this->em->flush();
-        $this->client->request('GET', '/s/plugins/reload');
+
         $this->useCleanupRollback = false;
         $this->setUpSymfony($this->configParams);
     }
