@@ -111,9 +111,13 @@
             {{ form_row(form.isGlobal) }}
             {{ form_row(form.isPreferenceCenter) }}
             {{ form_row(form.isPublished) }}
-            {{ form_row(customForm.exclude_unsubscribed) }}
-            {{ form_row(customForm.exclude_bounces) }}
-            {{ form_row(customForm.exclude_contacts_no_email) }}
+            {% if form.customForm is defined %}
+                {{ form_row(customForm.exclude_unsubscribed) }}
+                {{ form_row(customForm.exclude_bounces) }}
+                {{ form_row(customForm.exclude_contacts_no_email) }}
+            {% endif %}
+
+
         </div>
     </div>
 </div>

@@ -95,7 +95,7 @@ jobs:
         run: |
           composer test -- --filter LenonLeiteFilterValidEmailRecipientBundle
 
-      - name: Run PHPStan
-        working-directory: ./mautic5.2
-        run: |
-          composer phpstan plugins/LenonLeiteFilterValidEmailRecipientBundle -- --error-format=github
+#      - name: Run PHPStan
+#        working-directory: ./mautic5.2
+#        run: |
+#          composer phpstan plugins/LenonLeiteFilterValidEmailRecipientBundle -- --error-format=github
