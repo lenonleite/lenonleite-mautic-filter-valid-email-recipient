@@ -77,6 +77,11 @@ class CustomListController extends ListController
      */
     public function newAction(Request $request, SegmentDependencies $segmentDependencies, SegmentCampaignShare $segmentCampaignShare)
     {
+
+        if (!$this->config->isPublished()) {
+            return parent::newAction($request, $segmentDependencies, $segmentCampaignShare);
+        }
+
         if (!$this->security->isGranted(LeadPermissions::LISTS_CREATE)) {
             return $this->accessDenied();
         }
@@ -182,8 +187,6 @@ class CustomListController extends ListController
                 ])
             );
         }
-
-
     }
 
     /**

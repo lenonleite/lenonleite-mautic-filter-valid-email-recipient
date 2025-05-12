@@ -86,6 +86,9 @@ class LeadListSubscriber implements EventSubscriberInterface
         $segment = $event->getSegment();
 
         $customFormEntity = $this->customLeadListModel->getRepository()->findOneBy(['leadList' => $segment]);
+        if (!$customFormEntity) {
+            return;
+        }
         if($customFormEntity->getExcludeBounces() || $customFormEntity->getExcludeUnsubscribed() ) {
             $event->getQueryBuilder()->leftJoin(
                 'l',
